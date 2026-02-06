@@ -50,12 +50,7 @@ const productData = {
       'Premature withdrawal available',
       'Auto-renewal option',
     ],
-    benefits: [
-      'No TDS deduction',
-      'Compound interest',
-      'Safe and secure investment',
-      'Regular income option',
-    ],
+    benefits: ['No TDS deduction', 'Compound interest', 'Safe and secure investment', 'Regular income option'],
     currentInvestment: 500000,
     maturityAmount: 750000,
     maturityDate: '15/02/2029',
@@ -98,12 +93,7 @@ const productData = {
       'Online application',
       'Quick disbursement',
     ],
-    benefits: [
-      'Minimal documentation',
-      'Competitive interest rates',
-      'EMI calculator available',
-      'Prepayment options',
-    ],
+    benefits: ['Minimal documentation', 'Competitive interest rates', 'EMI calculator available', 'Prepayment options'],
     availableLimit: 5000000,
     usedLimit: 1500000,
     availableBalance: 3500000,
@@ -139,9 +129,7 @@ export default function MoneyScreen() {
           <>
             <View style={styles.overviewHeader}>
               <Text style={styles.overviewLabel}>Current Investment</Text>
-              <Text style={styles.overviewValue}>
-                ₹{product.currentInvestment.toLocaleString('en-IN')}
-              </Text>
+              <Text style={styles.overviewValue}>₹{product.currentInvestment.toLocaleString('en-IN')}</Text>
             </View>
             <View style={styles.overviewRow}>
               <View style={styles.overviewItem}>
@@ -165,9 +153,7 @@ export default function MoneyScreen() {
           <>
             <View style={styles.overviewHeader}>
               <Text style={styles.overviewLabel}>Current Investment</Text>
-              <Text style={styles.overviewValue}>
-                ₹{product.currentInvestment.toLocaleString('en-IN')}
-              </Text>
+              <Text style={styles.overviewValue}>₹{product.currentInvestment.toLocaleString('en-IN')}</Text>
             </View>
             <View style={styles.overviewRow}>
               <View style={styles.overviewItem}>
@@ -184,9 +170,7 @@ export default function MoneyScreen() {
               </View>
             </View>
             <View style={styles.interestRateBadge}>
-              <Text style={styles.interestRateText}>
-                Expected Returns: {product.interestRate} p.a.
-              </Text>
+              <Text style={styles.interestRateText}>Expected Returns: {product.interestRate} p.a.</Text>
             </View>
           </>
         )}
@@ -195,9 +179,7 @@ export default function MoneyScreen() {
           <>
             <View style={styles.overviewHeader}>
               <Text style={styles.overviewLabel}>Available Credit Limit</Text>
-              <Text style={styles.overviewValue}>
-                ₹{product.availableBalance.toLocaleString('en-IN')}
-              </Text>
+              <Text style={styles.overviewValue}>₹{product.availableBalance.toLocaleString('en-IN')}</Text>
             </View>
             <View style={styles.progressBarContainer}>
               <View style={styles.progressBarBackground}>
@@ -211,12 +193,8 @@ export default function MoneyScreen() {
                 />
               </View>
               <View style={styles.progressBarLabels}>
-                <Text style={styles.progressBarLabel}>
-                  Used: ₹{product.usedLimit.toLocaleString('en-IN')}
-                </Text>
-                <Text style={styles.progressBarLabel}>
-                  Limit: ₹{product.maxAmount.toLocaleString('en-IN')}
-                </Text>
+                <Text style={styles.progressBarLabel}>Used: ₹{product.usedLimit.toLocaleString('en-IN')}</Text>
+                <Text style={styles.progressBarLabel}>Limit: ₹{product.maxAmount.toLocaleString('en-IN')}</Text>
               </View>
             </View>
             <View style={styles.interestRateBadge}>
@@ -275,12 +253,9 @@ export default function MoneyScreen() {
           <Pressable
             key={tab}
             style={[styles.tab, selectedTab === tab && styles.tabActive]}
-            onPress={() => setSelectedTab(tab)}>
-            <Text
-              style={[
-                styles.tabText,
-                selectedTab === tab && styles.tabTextActive,
-              ]}>
+            onPress={() => setSelectedTab(tab)}
+          >
+            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextActive]}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </Text>
           </Pressable>
@@ -325,14 +300,10 @@ export default function MoneyScreen() {
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Interest Rate</Text>
-              <Text style={[styles.detailValue, { color: BANKING_COLORS.success }]}>
-                {product.interestRate} p.a.
-              </Text>
+              <Text style={[styles.detailValue, { color: BANKING_COLORS.success }]}>{product.interestRate} p.a.</Text>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>
-                {productType === 'IMPLS' ? 'Maximum Amount' : 'Minimum Amount'}
-              </Text>
+              <Text style={styles.detailLabel}>{productType === 'IMPLS' ? 'Maximum Amount' : 'Minimum Amount'}</Text>
               <Text style={styles.detailValue}>
                 ₹{((productType === 'IMPLS' ? product.maxAmount : product.minAmount) || 0).toLocaleString('en-IN')}
               </Text>
@@ -351,11 +322,9 @@ export default function MoneyScreen() {
           <View style={[styles.detailsCard, getCardShadowStyle()]}>
             <Text style={styles.cardTitle}>Terms & Conditions</Text>
             <Text style={styles.termsText}>
-              • Interest rates are subject to change as per market conditions{'\n'}
-              • Terms and conditions apply{'\n'}
-              • Please read the product brochure for complete details{'\n'}
-              • For queries, contact our customer service{'\n'}
-              • All investments are subject to market risks
+              • Interest rates are subject to change as per market conditions{'\n'}• Terms and conditions apply{'\n'}•
+              Please read the product brochure for complete details{'\n'}• For queries, contact our customer service
+              {'\n'}• All investments are subject to market risks
             </Text>
           </View>
         </>
@@ -378,9 +347,7 @@ export default function MoneyScreen() {
                     <Text style={styles.transactionDescription}>Loan Disbursement</Text>
                     <Text style={styles.transactionDate}>2024-01-15</Text>
                   </View>
-                  <Text style={[styles.transactionAmount, { color: BANKING_COLORS.error }]}>
-                    -₹1,50,000
-                  </Text>
+                  <Text style={[styles.transactionAmount, { color: BANKING_COLORS.error }]}>-₹1,50,000</Text>
                 </View>
                 <View style={[styles.transactionItem, getCardShadowStyle()]}>
                   <View style={styles.transactionIconContainer}>
@@ -392,9 +359,7 @@ export default function MoneyScreen() {
                     <Text style={styles.transactionDescription}>EMI Payment</Text>
                     <Text style={styles.transactionDate}>2024-02-01</Text>
                   </View>
-                  <Text style={[styles.transactionAmount, { color: BANKING_COLORS.success }]}>
-                    +₹25,000
-                  </Text>
+                  <Text style={[styles.transactionAmount, { color: BANKING_COLORS.success }]}>+₹25,000</Text>
                 </View>
               </>
             ) : (
@@ -424,7 +389,7 @@ export default function MoneyScreen() {
                     <Text style={styles.transactionDate}>2024-02-01</Text>
                   </View>
                   <Text style={[styles.transactionAmount, { color: BANKING_COLORS.success }]}>
-                    +₹{(product.currentInvestment * 0.075 / 12).toFixed(0)}
+                    +₹{((product.currentInvestment * 0.075) / 12).toFixed(0)}
                   </Text>
                 </View>
               </>
@@ -439,9 +404,7 @@ export default function MoneyScreen() {
       {/* CTA Button */}
       <View style={styles.ctaContainer}>
         <Pressable style={styles.ctaButton}>
-          <Text style={styles.ctaButtonText}>
-            {productType === 'IMPLS' ? 'Apply for Loan' : 'Start Investment'}
-          </Text>
+          <Text style={styles.ctaButtonText}>{productType === 'IMPLS' ? 'Apply for Loan' : 'Start Investment'}</Text>
         </Pressable>
       </View>
     </ScrollView>

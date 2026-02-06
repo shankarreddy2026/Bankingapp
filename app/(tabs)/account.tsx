@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -34,28 +34,105 @@ const BANKING_COLORS = {
   menuBg: '#F1F5F9',
 } as const;
 
-// Mock transaction data
-const mockTransactions = [
-  { id: 1, type: 'credit', amount: 5000, description: 'Salary Credit', date: '2024-02-01', balance: 125000 },
-  { id: 2, type: 'debit', amount: 2500, description: 'ATM Withdrawal', date: '2024-01-28', balance: 120000 },
-  { id: 3, type: 'debit', amount: 1500, description: 'Online Payment', date: '2024-01-25', balance: 122500 },
-  { id: 4, type: 'credit', amount: 3000, description: 'Transfer Received', date: '2024-01-20', balance: 124000 },
-  { id: 5, type: 'debit', amount: 800, description: 'Bill Payment', date: '2024-01-18', balance: 121000 },
-];
+// Build mock transaction list with many bank-related entries (for load more + period filter)
+const buildMockTransactions = () => {
+  const descriptions = [
+    { desc: 'Salary Credit', type: 'credit' as const },
+    { desc: 'ATM Withdrawal', type: 'debit' as const },
+    { desc: 'NEFT Transfer In', type: 'credit' as const },
+    { desc: 'UPI Payment', type: 'debit' as const },
+    { desc: 'Interest Credited', type: 'credit' as const },
+    { desc: 'EMI Debit', type: 'debit' as const },
+    { desc: 'Cash Deposit', type: 'credit' as const },
+    { desc: 'Bill Payment', type: 'debit' as const },
+    { desc: 'Fund Transfer Received', type: 'credit' as const },
+    { desc: 'Card Payment', type: 'debit' as const },
+    { desc: 'Dividend Credit', type: 'credit' as const },
+    { desc: 'Loan Disbursement', type: 'credit' as const },
+    { desc: 'Standing Instruction', type: 'debit' as const },
+    { desc: 'Cheque Deposit', type: 'credit' as const },
+    { desc: 'Utility Payment', type: 'debit' as const },
+  ];
+  const list: {
+    id: number;
+    type: 'credit' | 'debit';
+    amount: number;
+    description: string;
+    date: string;
+    balance: number;
+  }[] = [];
+  let balance = 125000;
+  const today = new Date();
+  for (let i = 0; i < 50; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - Math.floor(i / 2));
+    const item = descriptions[i % descriptions.length];
+    const amount = item.type === 'credit' ? 2000 + (i % 5) * 1000 : 500 + (i % 4) * 500;
+    if (item.type === 'credit') balance += amount;
+    else balance -= amount;
+    list.push({
+      id: i + 1,
+      type: item.type,
+      amount,
+      description: item.desc,
+      date: d.toISOString().slice(0, 10),
+      balance,
+    });
+  }
+  return list;
+};
+
+const ALL_MOCK_TRANSACTIONS = buildMockTransactions();
+
+function getDaysFromPeriod(period: string): number {
+  if (period === '7 Days') return 7;
+  if (period === '30 Days') return 30;
+  if (period === '90 Days') return 90;
+  return 30;
+}
 
 export default function AccountScreen() {
-  const { type } = useLocalSearchParams();
-  const accountType = type ? String(type).toUpperCase() : 'SAVING';
+  const params = useLocalSearchParams<{ type?: string }>();
+  const typeParam = (params?.type && String(params.type).toLowerCase()) || 'saving';
+  const isCurrent = typeParam === 'current';
+  const accountTypeKey = isCurrent ? 'CURRENT' : 'SAVING';
+  const accountTypeDisplay = isCurrent ? 'Current' : 'Saving';
+
   const [selectedPeriod, setSelectedPeriod] = useState('30 Days');
-  
-  // Mock account data
+  const [balanceVisible, setBalanceVisible] = useState(true);
+  const [displayCount, setDisplayCount] = useState(5);
+
+  const days = getDaysFromPeriod(selectedPeriod);
+  const filterDate = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.toISOString().slice(0, 10);
+  }, [days]);
+
+  const filteredTransactions = useMemo(() => {
+    return ALL_MOCK_TRANSACTIONS.filter((t) => t.date >= filterDate);
+  }, [filterDate]);
+
+  const displayedTransactions = useMemo(() => {
+    return filteredTransactions.slice(0, displayCount);
+  }, [filteredTransactions, displayCount]);
+
+  const hasMore = displayCount < filteredTransactions.length;
+
+  // Mock account data (bank-related)
   const accountData = {
     accountNumber: '****1234',
     ifscCode: 'BANK0001234',
-    balance: accountType === 'SAVING' ? 125000 : 85000,
-    availableBalance: accountType === 'SAVING' ? 123500 : 84500,
-    interestRate: accountType === 'SAVING' ? '4.5%' : '3.0%',
+    balance: accountTypeKey === 'SAVING' ? 125000 : 85000,
+    availableBalance: accountTypeKey === 'SAVING' ? 123500 : 84500,
+    interestRate: accountTypeKey === 'SAVING' ? '4.5%' : '3.0%',
   };
+
+  const handleLoadMore = () => {
+    setDisplayCount((prev) => Math.min(prev + 10, filteredTransactions.length));
+  };
+
+  const formatAmount = (value: number) => (balanceVisible ? `₹${value.toLocaleString('en-IN')}` : '••••••');
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -63,12 +140,10 @@ export default function AccountScreen() {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIcon, { backgroundColor: BANKING_COLORS.account + '20' }]}>
-            <Text style={styles.headerIconText}>
-              {accountType === 'SAVING' ? '💰' : '💵'}
-            </Text>
+            <Text style={styles.headerIconText}>{accountTypeKey === 'SAVING' ? '💰' : '💵'}</Text>
           </View>
           <View style={styles.headerText}>
-            <Text style={styles.headerTitle}>{accountType} Account</Text>
+            <Text style={styles.headerTitle}>{accountTypeDisplay} Account</Text>
             <Text style={styles.headerSubtitle}>Account Number: {accountData.accountNumber}</Text>
           </View>
         </View>
@@ -78,19 +153,15 @@ export default function AccountScreen() {
       <View style={[styles.balanceCard, getCardShadowStyle()]}>
         <View style={styles.balanceHeader}>
           <Text style={styles.balanceLabel}>Available Balance</Text>
-          <Pressable style={styles.eyeButton}>
-            <Text style={styles.eyeIcon}>👁️</Text>
+          <Pressable onPress={() => setBalanceVisible(!balanceVisible)} style={styles.eyeButton}>
+            <Text style={styles.eyeIcon}>{balanceVisible ? '👁️' : '🔒'}</Text>
           </Pressable>
         </View>
-        <Text style={styles.balanceAmount}>
-          ₹{accountData.availableBalance.toLocaleString('en-IN')}
-        </Text>
+        <Text style={styles.balanceAmount}>{formatAmount(accountData.availableBalance)}</Text>
         <View style={styles.balanceDetails}>
           <View style={styles.balanceDetailItem}>
             <Text style={styles.balanceDetailLabel}>Total Balance</Text>
-            <Text style={styles.balanceDetailValue}>
-              ₹{accountData.balance.toLocaleString('en-IN')}
-            </Text>
+            <Text style={styles.balanceDetailValue}>{formatAmount(accountData.balance)}</Text>
           </View>
           <View style={styles.balanceDetailItem}>
             <Text style={styles.balanceDetailLabel}>Interest Rate</Text>
@@ -134,9 +205,7 @@ export default function AccountScreen() {
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Account Type</Text>
-          <Text style={[styles.detailValue, { color: BANKING_COLORS.account }]}>
-            {accountType}
-          </Text>
+          <Text style={[styles.detailValue, { color: BANKING_COLORS.account }]}>{accountTypeDisplay}</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Branch</Text>
@@ -152,16 +221,13 @@ export default function AccountScreen() {
             {['7 Days', '30 Days', '90 Days'].map((period) => (
               <Pressable
                 key={period}
-                style={[
-                  styles.periodBtn,
-                  selectedPeriod === period && styles.periodBtnActive,
-                ]}
-                onPress={() => setSelectedPeriod(period)}>
-                <Text
-                  style={[
-                    styles.periodBtnText,
-                    selectedPeriod === period && styles.periodBtnTextActive,
-                  ]}>
+                style={[styles.periodBtn, selectedPeriod === period && styles.periodBtnActive]}
+                onPress={() => {
+                  setSelectedPeriod(period);
+                  setDisplayCount(5);
+                }}
+              >
+                <Text style={[styles.periodBtnText, selectedPeriod === period && styles.periodBtnTextActive]}>
                   {period}
                 </Text>
               </Pressable>
@@ -169,7 +235,7 @@ export default function AccountScreen() {
           </View>
         </View>
 
-        {mockTransactions.map((transaction) => (
+        {displayedTransactions.map((transaction) => (
           <View key={transaction.id} style={[styles.transactionItem, getCardShadowStyle()]}>
             <View style={styles.transactionIconContainer}>
               <View
@@ -177,14 +243,11 @@ export default function AccountScreen() {
                   styles.transactionIcon,
                   {
                     backgroundColor:
-                      transaction.type === 'credit'
-                        ? BANKING_COLORS.success + '20'
-                        : BANKING_COLORS.warning + '20',
+                      transaction.type === 'credit' ? BANKING_COLORS.success + '20' : BANKING_COLORS.warning + '20',
                   },
-                ]}>
-                <Text style={styles.transactionIconText}>
-                  {transaction.type === 'credit' ? '⬇️' : '⬆️'}
-                </Text>
+                ]}
+              >
+                <Text style={styles.transactionIconText}>{transaction.type === 'credit' ? '⬇️' : '⬆️'}</Text>
               </View>
             </View>
             <View style={styles.transactionContent}>
@@ -196,24 +259,31 @@ export default function AccountScreen() {
                 style={[
                   styles.transactionAmountText,
                   {
-                    color:
-                      transaction.type === 'credit'
-                        ? BANKING_COLORS.success
-                        : BANKING_COLORS.textPrimary,
+                    color: transaction.type === 'credit' ? BANKING_COLORS.success : BANKING_COLORS.textPrimary,
                   },
-                ]}>
-                {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount.toLocaleString('en-IN')}
+                ]}
+              >
+                {transaction.type === 'credit' ? '+' : '-'}
+                {balanceVisible ? `₹${transaction.amount.toLocaleString('en-IN')}` : '••••••'}
               </Text>
               <Text style={styles.transactionBalance}>
-                Balance: ₹{transaction.balance.toLocaleString('en-IN')}
+                Balance: {balanceVisible ? `₹${transaction.balance.toLocaleString('en-IN')}` : '••••••'}
               </Text>
             </View>
           </View>
         ))}
 
-        <Pressable style={styles.viewAllBtn}>
-          <Text style={styles.viewAllText}>View All Transactions →</Text>
-        </Pressable>
+        {hasMore ? (
+          <Pressable style={styles.loadMoreBtn} onPress={handleLoadMore}>
+            <Text style={styles.loadMoreText}>Load more transactions</Text>
+          </Pressable>
+        ) : (
+          filteredTransactions.length > 0 && (
+            <View style={styles.loadMoreFooter}>
+              <Text style={styles.loadMoreFooterText}>All transactions loaded</Text>
+            </View>
+          )
+        )}
       </View>
     </ScrollView>
   );
@@ -449,14 +519,29 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: BANKING_COLORS.textSecondary,
   },
-  viewAllBtn: {
-    marginTop: 8,
-    paddingVertical: 12,
+  loadMoreBtn: {
+    marginTop: 16,
+    paddingVertical: 14,
     alignItems: 'center',
+    backgroundColor: BANKING_COLORS.cardBg,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: BANKING_COLORS.account,
+    ...getCardShadowStyle(),
   },
-  viewAllText: {
+  loadMoreText: {
     fontSize: 14,
     color: BANKING_COLORS.account,
     fontWeight: '600',
+  },
+  loadMoreFooter: {
+    marginTop: 16,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  loadMoreFooterText: {
+    fontSize: 13,
+    color: BANKING_COLORS.textSecondary,
+    fontWeight: '500',
   },
 });

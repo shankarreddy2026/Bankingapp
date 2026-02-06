@@ -118,18 +118,12 @@ export default function ProfileScreen() {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIcon, { backgroundColor: BANKING_COLORS.profile + '20' }]}>
-            <Text style={styles.headerIconText}>
-              {isViewProfile ? '👤' : '🔒'}
-            </Text>
+            <Text style={styles.headerIconText}>{isViewProfile ? '👤' : '🔒'}</Text>
           </View>
           <View style={styles.headerText}>
-            <Text style={styles.headerTitle}>
-              {isViewProfile ? 'View Profile' : 'Change Password'}
-            </Text>
+            <Text style={styles.headerTitle}>{isViewProfile ? 'View Profile' : 'Change Password'}</Text>
             <Text style={styles.headerSubtitle}>
-              {isViewProfile
-                ? 'Your account information'
-                : 'Update your account password'}
+              {isViewProfile ? 'Your account information' : 'Update your account password'}
             </Text>
           </View>
         </View>
@@ -227,9 +221,7 @@ export default function ProfileScreen() {
               </View>
               <View style={styles.infoContent}>
                 <Text style={styles.infoLabel}>KYC Status</Text>
-                <Text style={[styles.infoValue, { color: BANKING_COLORS.success }]}>
-                  {userData.kycStatus}
-                </Text>
+                <Text style={[styles.infoValue, { color: BANKING_COLORS.success }]}>{userData.kycStatus}</Text>
               </View>
             </View>
           </View>
@@ -276,19 +268,14 @@ export default function ProfileScreen() {
           {/* Password Change Form */}
           <View style={[styles.formCard, getCardShadowStyle()]}>
             <Text style={styles.formTitle}>Change Your Password</Text>
-            <Text style={styles.formSubtitle}>
-              Please enter your current password and choose a new secure password
-            </Text>
+            <Text style={styles.formSubtitle}>Please enter your current password and choose a new secure password</Text>
 
             {/* Current Password */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Current Password</Text>
               <View style={styles.passwordInputWrapper}>
                 <TextInput
-                  style={[
-                    styles.passwordInput,
-                    passwordErrors.current && styles.inputError,
-                  ]}
+                  style={[styles.passwordInput, passwordErrors.current && styles.inputError]}
                   placeholder="Enter current password"
                   value={currentPassword}
                   onChangeText={setCurrentPassword}
@@ -302,15 +289,12 @@ export default function ProfileScreen() {
                       ...showPasswords,
                       current: !showPasswords.current,
                     })
-                  }>
-                  <Text style={styles.eyeIcon}>
-                    {showPasswords.current ? '👁️' : '👁'}
-                  </Text>
+                  }
+                >
+                  <Text style={styles.eyeIcon}>{showPasswords.current ? '👁️' : '👁'}</Text>
                 </Pressable>
               </View>
-              {passwordErrors.current ? (
-                <Text style={styles.errorText}>{passwordErrors.current}</Text>
-              ) : null}
+              {passwordErrors.current ? <Text style={styles.errorText}>{passwordErrors.current}</Text> : null}
             </View>
 
             {/* New Password */}
@@ -318,10 +302,7 @@ export default function ProfileScreen() {
               <Text style={styles.inputLabel}>New Password</Text>
               <View style={styles.passwordInputWrapper}>
                 <TextInput
-                  style={[
-                    styles.passwordInput,
-                    passwordErrors.new && styles.inputError,
-                  ]}
+                  style={[styles.passwordInput, passwordErrors.new && styles.inputError]}
                   placeholder="Enter new password"
                   value={newPassword}
                   onChangeText={setNewPassword}
@@ -335,15 +316,12 @@ export default function ProfileScreen() {
                       ...showPasswords,
                       new: !showPasswords.new,
                     })
-                  }>
-                  <Text style={styles.eyeIcon}>
-                    {showPasswords.new ? '👁️' : '👁'}
-                  </Text>
+                  }
+                >
+                  <Text style={styles.eyeIcon}>{showPasswords.new ? '👁️' : '👁'}</Text>
                 </Pressable>
               </View>
-              {passwordErrors.new ? (
-                <Text style={styles.errorText}>{passwordErrors.new}</Text>
-              ) : null}
+              {passwordErrors.new ? <Text style={styles.errorText}>{passwordErrors.new}</Text> : null}
               <Text style={styles.helpText}>
                 Password must be at least 8 characters with uppercase, lowercase, and number
               </Text>
@@ -354,10 +332,7 @@ export default function ProfileScreen() {
               <Text style={styles.inputLabel}>Confirm New Password</Text>
               <View style={styles.passwordInputWrapper}>
                 <TextInput
-                  style={[
-                    styles.passwordInput,
-                    passwordErrors.confirm && styles.inputError,
-                  ]}
+                  style={[styles.passwordInput, passwordErrors.confirm && styles.inputError]}
                   placeholder="Confirm new password"
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
@@ -371,28 +346,21 @@ export default function ProfileScreen() {
                       ...showPasswords,
                       confirm: !showPasswords.confirm,
                     })
-                  }>
-                  <Text style={styles.eyeIcon}>
-                    {showPasswords.confirm ? '👁️' : '👁'}
-                  </Text>
+                  }
+                >
+                  <Text style={styles.eyeIcon}>{showPasswords.confirm ? '👁️' : '👁'}</Text>
                 </Pressable>
               </View>
-              {passwordErrors.confirm ? (
-                <Text style={styles.errorText}>{passwordErrors.confirm}</Text>
-              ) : null}
+              {passwordErrors.confirm ? <Text style={styles.errorText}>{passwordErrors.confirm}</Text> : null}
             </View>
 
             {/* Submit Button */}
             <Pressable
-              style={[
-                styles.submitButton,
-                isSubmitting && styles.submitButtonDisabled,
-              ]}
+              style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
               onPress={handlePasswordChange}
-              disabled={isSubmitting}>
-              <Text style={styles.submitButtonText}>
-                {isSubmitting ? 'Updating...' : 'Update Password'}
-              </Text>
+              disabled={isSubmitting}
+            >
+              <Text style={styles.submitButtonText}>{isSubmitting ? 'Updating...' : 'Update Password'}</Text>
             </Pressable>
 
             {/* Security Tips */}
