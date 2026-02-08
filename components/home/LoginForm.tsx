@@ -1,4 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { GradientView } from './GradientView';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BANKING_COLORS, isSmallDevice, isValidEmail, isValidPassword } from './constants';
 import { getButtonShadowStyle, getCardShadowStyle } from './shadowStyles';
@@ -84,14 +84,14 @@ export function LoginForm({
         disabled={!canLogin}
         onPress={onLogin}
       >
-        <LinearGradient
+        <GradientView
           colors={!canLogin ? ['#E5E7EB', '#D1D5DB'] : ['#1E40AF', '#2563EB']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.buttonGradient}
         >
           <Text style={styles.modernLoginButtonText}>Sign In</Text>
-        </LinearGradient>
+        </GradientView>
       </Pressable>
     </View>
   );

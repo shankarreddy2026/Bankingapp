@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BANKING_COLORS, hexToRgba } from './constants';
 import { getCardShadowStyle } from './shadowStyles';
 import { isSmallDevice } from './constants';
+import { flattenStyleForWeb } from './webSafeStyles';
 
 interface RecentTransactionsSectionProps {
   onViewAll: () => void;
@@ -36,27 +37,27 @@ const RECENT_ITEMS = [
 
 export function RecentTransactionsSection({ onViewAll }: RecentTransactionsSectionProps) {
   return (
-    <View style={styles.recentSection}>
-      <View style={styles.recentHeader}>
-        <Text style={styles.recentSectionTitle}>Recent Transactions</Text>
+    <View style={flattenStyleForWeb(styles.recentSection)}>
+      <View style={flattenStyleForWeb(styles.recentHeader)}>
+        <Text style={flattenStyleForWeb(styles.recentSectionTitle)}>Recent Transactions</Text>
         <Pressable onPress={onViewAll}>
-          <Text style={styles.viewAllText}>View All</Text>
+          <Text style={flattenStyleForWeb(styles.viewAllText)}>View All</Text>
         </Pressable>
       </View>
-      <View style={[styles.transactionCard, getCardShadowStyle()]}>
+      <View style={flattenStyleForWeb({ ...styles.transactionCard, ...getCardShadowStyle() })}>
         {RECENT_ITEMS.map((item, index) => (
           <View key={item.title + item.date}>
-            <View style={styles.transactionItem}>
-              <View style={[styles.transactionIcon, { backgroundColor: item.iconBg }]}>
-                <Text style={styles.transactionIconText}>{item.icon}</Text>
+            <View style={flattenStyleForWeb(styles.transactionItem)}>
+              <View style={flattenStyleForWeb({ ...styles.transactionIcon, backgroundColor: item.iconBg })}>
+                <Text style={flattenStyleForWeb(styles.transactionIconText)}>{item.icon}</Text>
               </View>
-              <View style={styles.transactionDetails}>
-                <Text style={styles.transactionTitle}>{item.title}</Text>
-                <Text style={styles.transactionDate}>{item.date}</Text>
+              <View style={flattenStyleForWeb(styles.transactionDetails)}>
+                <Text style={flattenStyleForWeb(styles.transactionTitle)}>{item.title}</Text>
+                <Text style={flattenStyleForWeb(styles.transactionDate)}>{item.date}</Text>
               </View>
-              <Text style={[styles.transactionAmount, { color: item.color }]}>{item.amount}</Text>
+              <Text style={flattenStyleForWeb({ ...styles.transactionAmount, color: item.color })}>{item.amount}</Text>
             </View>
-            {index < RECENT_ITEMS.length - 1 ? <View style={styles.transactionDivider} /> : null}
+            {index < RECENT_ITEMS.length - 1 ? <View style={flattenStyleForWeb(styles.transactionDivider)} /> : null}
           </View>
         ))}
       </View>

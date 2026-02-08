@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BANKING_COLORS } from './constants';
 import { getCardShadowStyle } from './shadowStyles';
 import { isSmallDevice } from './constants';
+import { flattenStyleForWeb } from './webSafeStyles';
 
 interface BalanceCardProps {
   balanceVisible: boolean;
@@ -10,23 +11,23 @@ interface BalanceCardProps {
 
 export function BalanceCard({ balanceVisible, onToggleVisibility }: BalanceCardProps) {
   return (
-    <View style={[styles.balanceCard, getCardShadowStyle()]}>
-      <View style={styles.balanceHeader}>
-        <Text style={styles.balanceLabel}>Total Balance</Text>
+    <View style={flattenStyleForWeb({ ...styles.balanceCard, ...getCardShadowStyle() })}>
+      <View style={flattenStyleForWeb(styles.balanceHeader)}>
+        <Text style={flattenStyleForWeb(styles.balanceLabel)}>Total Balance</Text>
         <Pressable onPress={onToggleVisibility} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Text style={styles.balanceEye}>{balanceVisible ? '👁️' : '🔒'}</Text>
+          <Text style={flattenStyleForWeb(styles.balanceEye)}>{balanceVisible ? '👁️' : '🔒'}</Text>
         </Pressable>
       </View>
-      <Text style={styles.balanceAmount}>{balanceVisible ? '$45,231.89' : '••••••'}</Text>
-      <View style={styles.balanceFooter}>
-        <View style={styles.balanceItem}>
-          <Text style={styles.balanceItemLabel}>Savings</Text>
-          <Text style={styles.balanceItemValue}>{balanceVisible ? '$28,450.00' : '••••••'}</Text>
+      <Text style={flattenStyleForWeb(styles.balanceAmount)}>{balanceVisible ? '$45,231.89' : '••••••'}</Text>
+      <View style={flattenStyleForWeb(styles.balanceFooter)}>
+        <View style={flattenStyleForWeb(styles.balanceItem)}>
+          <Text style={flattenStyleForWeb(styles.balanceItemLabel)}>Savings</Text>
+          <Text style={flattenStyleForWeb(styles.balanceItemValue)}>{balanceVisible ? '$28,450.00' : '••••••'}</Text>
         </View>
-        <View style={styles.balanceDivider} />
-        <View style={styles.balanceItem}>
-          <Text style={styles.balanceItemLabel}>Current</Text>
-          <Text style={styles.balanceItemValue}>{balanceVisible ? '$16,781.89' : '••••••'}</Text>
+        <View style={flattenStyleForWeb(styles.balanceDivider)} />
+        <View style={flattenStyleForWeb(styles.balanceItem)}>
+          <Text style={flattenStyleForWeb(styles.balanceItemLabel)}>Current</Text>
+          <Text style={flattenStyleForWeb(styles.balanceItemValue)}>{balanceVisible ? '$16,781.89' : '••••••'}</Text>
         </View>
       </View>
     </View>

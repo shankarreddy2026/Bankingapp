@@ -1,19 +1,17 @@
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import {
   Animated,
   FlatList,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { hexToRgba, MENU } from './constants';
 import type { MenuSection } from './constants';
-import { getShadowStyle, getSubmenuShadowStyle } from './shadowStyles';
-import { isSmallDevice } from './constants';
-import { getMenuShadowStyle } from './shadowStyles';
+import { hexToRgba, isSmallDevice, MENU } from './constants';
+import { getMenuShadowStyle, getShadowStyle, getSubmenuShadowStyle } from './shadowStyles';
+import { flattenStyleForWeb } from './webSafeStyles';
 
 interface SideMenuProps {
   isWeb: boolean;
@@ -26,19 +24,19 @@ interface SideMenuProps {
 
 function MenuHeader({ onClose }: { onClose: () => void }) {
   return (
-    <View style={menuStyles.menuHeader}>
-      <View style={menuStyles.menuHeaderTop}>
-        <View style={menuStyles.menuTitleContainer}>
-          <View style={menuStyles.menuIconContainer}>
-            <Text style={menuStyles.menuIcon}>🏦</Text>
+    <View style={flattenStyleForWeb(menuStyles.menuHeader)}>
+      <View style={flattenStyleForWeb(menuStyles.menuHeaderTop)}>
+        <View style={flattenStyleForWeb(menuStyles.menuTitleContainer)}>
+          <View style={flattenStyleForWeb(menuStyles.menuIconContainer)}>
+            <Text style={flattenStyleForWeb(menuStyles.menuIcon)}>🏦</Text>
           </View>
-          <View style={menuStyles.menuTitleTextContainer}>
-            <Text style={menuStyles.menuTitleMain}>Banking</Text>
-            <Text style={menuStyles.menuTitleSub}>Menu</Text>
+          <View style={flattenStyleForWeb(menuStyles.menuTitleTextContainer)}>
+            <Text style={flattenStyleForWeb(menuStyles.menuTitleMain)}>Banking</Text>
+            <Text style={flattenStyleForWeb(menuStyles.menuTitleSub)}>Menu</Text>
           </View>
         </View>
-        <Pressable onPress={onClose} style={menuStyles.closeButton}>
-          <Text style={menuStyles.closeButtonText}>×</Text>
+        <Pressable onPress={onClose} style={flattenStyleForWeb(menuStyles.closeButton)}>
+          <Text style={flattenStyleForWeb(menuStyles.closeButtonText)}>×</Text>
         </Pressable>
       </View>
     </View>
@@ -50,48 +48,55 @@ function MenuSectionRow({
   isOpen,
   onToggle,
   onClose,
+  onNavigate,
 }: {
   section: MenuSection;
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
+  onNavigate: (href: string) => void;
 }) {
   const sectionBgColor = isOpen ? hexToRgba(section.color, 0.08) : 'transparent';
   return (
-    <View style={menuStyles.menuSection}>
+    <View style={flattenStyleForWeb(menuStyles.menuSection)}>
       <Pressable
         onPress={onToggle}
-        style={[menuStyles.sectionHeader, { backgroundColor: sectionBgColor }]}
+        style={flattenStyleForWeb({ ...menuStyles.sectionHeader, backgroundColor: sectionBgColor })}
       >
-        <View style={menuStyles.sectionHeaderContent}>
-          <View style={[menuStyles.sectionIcon, { backgroundColor: section.color }]}>
-            <Text style={menuStyles.sectionIconText}>{section.icon}</Text>
+        <View style={flattenStyleForWeb(menuStyles.sectionHeaderContent)}>
+          <View style={flattenStyleForWeb({ ...menuStyles.sectionIcon, backgroundColor: section.color })}>
+            <Text style={flattenStyleForWeb(menuStyles.sectionIconText)}>{section.icon}</Text>
           </View>
-          <Text style={[menuStyles.sectionTitle, menuStyles.sectionTitleWithColor, { color: section.color }]}>
+          <Text style={flattenStyleForWeb({ ...menuStyles.sectionTitle, ...menuStyles.sectionTitleWithColor, color: section.color })}>
             {section.title}
           </Text>
         </View>
-        <View style={[menuStyles.toggleIcon, { backgroundColor: section.color }]}>
-          <Text style={menuStyles.toggleIconText}>{isOpen ? '−' : '+'}</Text>
+        <View style={flattenStyleForWeb({ ...menuStyles.toggleIcon, backgroundColor: section.color })}>
+          <Text style={flattenStyleForWeb(menuStyles.toggleIconText)}>{isOpen ? '−' : '+'}</Text>
         </View>
       </Pressable>
       {isOpen ? (
-        <View style={menuStyles.submenu}>
-          {section.items.map((item) => (
-            <Link key={item.label} href={item.href as any} asChild>
+        <View style={flattenStyleForWeb(menuStyles.submenu)}>
+          {section.items.map((item) => {
+            const submenuItemStyle = flattenStyleForWeb({
+              ...menuStyles.submenuItem,
+              borderLeftColor: section.color,
+              ...getSubmenuShadowStyle(),
+            });
+            return (
               <Pressable
-                style={[
-                  menuStyles.submenuItem,
-                  { borderLeftColor: section.color },
-                  getSubmenuShadowStyle(),
-                ]}
-                onPress={onClose}
+                key={item.label}
+                style={submenuItemStyle}
+                onPress={() => {
+                  onClose();
+                  onNavigate(item.href);
+                }}
               >
-                <Text style={menuStyles.submenuIcon}>{item.icon}</Text>
-                <Text style={menuStyles.submenuText}>{item.label}</Text>
+                <Text style={flattenStyleForWeb(menuStyles.submenuIcon)}>{item.icon}</Text>
+                <Text style={flattenStyleForWeb(menuStyles.submenuText)}>{item.label}</Text>
               </Pressable>
-            </Link>
-          ))}
+            );
+          })}
         </View>
       ) : null}
     </View>
@@ -106,6 +111,9 @@ export function SideMenu({
   onToggleSection,
   onClose,
 }: SideMenuProps) {
+  const router = useRouter();
+  const handleNavigate = (href: string) => router.push(href as any);
+
   const menuContent = (
     <>
       <MenuHeader onClose={onClose} />
@@ -116,32 +124,30 @@ export function SideMenu({
           isOpen={openSection === section.title}
           onToggle={() => onToggleSection(section.title)}
           onClose={onClose}
+          onNavigate={handleNavigate}
         />
       ))}
     </>
   );
 
-  const baseMenuStyle = [
-    menuStyles.sideMenu,
-    getMenuShadowStyle(),
-  ];
-
   if (isWebPlatform) {
+    const webMenuStyle = flattenStyleForWeb({
+      ...menuStyles.sideMenu,
+      ...getMenuShadowStyle(),
+      ...(menuOpen ? menuStyles.sideMenuOpen : menuStyles.sideMenuClosed),
+      transition: 'left 0.35s cubic-bezier(0.4, 0.0, 0.2, 1)',
+    });
+    const webMenuScrollStyle = flattenStyleForWeb({
+      ...menuStyles.menuScroll,
+      ...menuStyles.menuContentContainer,
+      overflow: 'scroll',
+      flex: 1,
+    });
     return (
-      <View
-        style={[
-          baseMenuStyle,
-          menuOpen ? menuStyles.sideMenuOpen : menuStyles.sideMenuClosed,
-          { transition: 'left 0.35s cubic-bezier(0.4, 0.0, 0.2, 1)' } as any,
-        ]}
-      >
-        <ScrollView
-          style={menuStyles.menuScroll}
-          contentContainerStyle={menuStyles.menuContentContainer}
-          showsVerticalScrollIndicator={true}
-        >
+      <View style={webMenuStyle}>
+        <View style={flattenStyleForWeb(webMenuScrollStyle)}>
           {menuContent}
-        </ScrollView>
+        </View>
       </View>
     );
   }
@@ -165,6 +171,7 @@ export function SideMenu({
             isOpen={openSection === section.title}
             onToggle={() => onToggleSection(section.title)}
             onClose={onClose}
+            onNavigate={handleNavigate}
           />
         )}
       />

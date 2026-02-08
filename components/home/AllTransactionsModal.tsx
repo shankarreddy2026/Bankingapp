@@ -58,13 +58,13 @@ export function AllTransactionsModal({
             </View>
           )}
           renderItem={({ item }) => (
-            <View style={[styles.modalTransactionItem, getCardShadowStyle()]}>
+            <View style={{ ...styles.modalTransactionItem, ...getCardShadowStyle() }}>
               <View style={styles.modalTransactionRow}>
                 <View
-                  style={[
-                    styles.modalTransactionIcon,
-                    { backgroundColor: hexToRgba(item.iconColor, 0.1) },
-                  ]}
+                  style={{
+                    ...styles.modalTransactionIcon,
+                    backgroundColor: hexToRgba(item.iconColor, 0.1),
+                  }}
                 >
                   <Text style={styles.modalTransactionIconText}>{item.icon}</Text>
                 </View>
@@ -73,15 +73,13 @@ export function AllTransactionsModal({
                   <Text style={styles.modalTransactionDate}>{item.date}</Text>
                 </View>
                 <Text
-                  style={[
-                    styles.modalTransactionAmount,
-                    {
-                      color:
-                        item.type === 'credit'
-                          ? BANKING_COLORS.success
-                          : BANKING_COLORS.error,
-                    },
-                  ]}
+                  style={{
+                    ...styles.modalTransactionAmount,
+                    color:
+                      item.type === 'credit'
+                        ? BANKING_COLORS.success
+                        : BANKING_COLORS.error,
+                  }}
                 >
                   {item.type === 'credit' ? '+' : '-'}${item.amount.toFixed(2)}
                 </Text>

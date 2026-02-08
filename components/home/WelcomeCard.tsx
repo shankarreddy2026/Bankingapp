@@ -1,22 +1,23 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { GradientView } from './GradientView';
 import { StyleSheet, Text, View } from 'react-native';
 import { BANKING_COLORS } from './constants';
 import { getCardShadowStyle } from './shadowStyles';
 import { isSmallDevice } from './constants';
+import { flattenStyleForWeb } from './webSafeStyles';
 
 export function WelcomeCard() {
   return (
-    <LinearGradient
+    <GradientView
       colors={[BANKING_COLORS.primary, BANKING_COLORS.primaryDark]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={styles.welcomeCard}
+      style={flattenStyleForWeb(styles.welcomeCard)}
     >
-      <View style={styles.welcomeContent}>
-        <Text style={styles.welcomeGreeting}>Account Overview 💼</Text>
-        <Text style={styles.welcomeSubtext}>Manage your finances securely</Text>
+      <View style={flattenStyleForWeb(styles.welcomeContent)}>
+        <Text style={flattenStyleForWeb(styles.welcomeGreeting)}>Account Overview 💼</Text>
+        <Text style={flattenStyleForWeb(styles.welcomeSubtext)}>Manage your finances securely</Text>
       </View>
-    </LinearGradient>
+    </GradientView>
   );
 }
 

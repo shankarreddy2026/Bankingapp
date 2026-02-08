@@ -1,4 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { GradientView } from '../../components/home/GradientView';
 import { useNavigation } from 'expo-router';
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import {
@@ -11,15 +11,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import {
-  AllTransactionsModal,
-  BalanceCard,
-  LoginForm,
-  QuickActionsSection,
-  RecentTransactionsSection,
-  SideMenu,
-  WelcomeCard,
-} from '../../components/home';
+import { AllTransactionsModal } from '../../components/home/AllTransactionsModal';
+import { BalanceCard } from '../../components/home/BalanceCard';
+import { LoginForm } from '../../components/home/LoginForm';
+import { QuickActionsSection } from '../../components/home/QuickActionsSection';
+import { RecentTransactionsSection } from '../../components/home/RecentTransactionsSection';
+import { SideMenu } from '../../components/home/SideMenu';
+import { WelcomeCard } from '../../components/home/WelcomeCard';
 import {
   BANKING_COLORS,
   generateTransactions,
@@ -28,6 +26,7 @@ import {
   isValidPassword,
 } from '../../components/home/constants';
 import { getShadowStyle } from '../../components/home/shadowStyles';
+import { flattenStyleForWeb } from '../../components/home/webSafeStyles';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -145,14 +144,14 @@ export default function HomeScreen() {
       navigation.setOptions({
         headerLeft: () => (
           <Pressable
-            style={styles.headerMenuButton}
+            style={isWeb ? flattenStyleForWeb(styles.headerMenuButton) : styles.headerMenuButton}
             onPress={toggleMenu}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <View style={styles.headerMenuIcon}>
-              <View style={[styles.headerMenuLine, menuOpen ? styles.headerMenuLineActive : null]} />
-              <View style={[styles.headerMenuLine, menuOpen ? styles.headerMenuLineActive : null]} />
-              <View style={[styles.headerMenuLine, menuOpen ? styles.headerMenuLineActive : null]} />
+            <View style={isWeb ? flattenStyleForWeb(styles.headerMenuIcon) : styles.headerMenuIcon}>
+              <View style={isWeb ? flattenStyleForWeb(menuOpen ? { ...styles.headerMenuLine, ...styles.headerMenuLineActive } : styles.headerMenuLine) : (menuOpen ? { ...styles.headerMenuLine, ...styles.headerMenuLineActive } : styles.headerMenuLine)} />
+              <View style={isWeb ? flattenStyleForWeb(menuOpen ? { ...styles.headerMenuLine, ...styles.headerMenuLineActive } : styles.headerMenuLine) : (menuOpen ? { ...styles.headerMenuLine, ...styles.headerMenuLineActive } : styles.headerMenuLine)} />
+              <View style={isWeb ? flattenStyleForWeb(menuOpen ? { ...styles.headerMenuLine, ...styles.headerMenuLineActive } : styles.headerMenuLine) : (menuOpen ? { ...styles.headerMenuLine, ...styles.headerMenuLineActive } : styles.headerMenuLine)} />
             </View>
           </Pressable>
         ),
@@ -163,14 +162,14 @@ export default function HomeScreen() {
   }, [loggedIn, menuOpen, navigation, toggleMenu]);
 
   return (
-    <View style={styles.page}>
+    <View style={isWeb ? flattenStyleForWeb(styles.page) : styles.page}>
       {!loggedIn ? (
         <KeyboardAvoidingView
           style={styles.loginContainer}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
-          <LinearGradient
+          <GradientView
             colors={['#1E3A8A', '#3B82F6', '#60A5FA']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -179,9 +178,9 @@ export default function HomeScreen() {
             <View style={styles.loginContentWrapper}>
               <View style={styles.loginHeader}>
                 <View style={styles.logoWrapper}>
-                  <LinearGradient colors={['#FFFFFF', '#F3F4F6']} style={styles.logoGradient}>
+                  <GradientView colors={['#FFFFFF', '#F3F4F6']} style={styles.logoGradient}>
                     <Text style={styles.logoText}>🏦</Text>
-                  </LinearGradient>
+                  </GradientView>
                 </View>
                 <Text style={styles.loginTitle}>Welcome Back</Text>
                 <Text style={styles.loginSubtitle}>Sign in to access your account</Text>
@@ -199,14 +198,14 @@ export default function HomeScreen() {
                 onLogin={handleLogin}
               />
             </View>
-          </LinearGradient>
+          </GradientView>
         </KeyboardAvoidingView>
       ) : (
-        <View style={styles.homeShell}>
+        <View style={isWeb ? flattenStyleForWeb(styles.homeShell) : styles.homeShell}>
           {isWeb ? (
             menuOpen && (
               <Pressable
-                style={[styles.overlay, { opacity: menuOpen ? 1 : 0 }]}
+                style={flattenStyleForWeb({ ...styles.overlay, opacity: menuOpen ? 1 : 0 })}
                 onPress={closeMenu}
               />
             )
@@ -225,24 +224,41 @@ export default function HomeScreen() {
             onClose={closeMenu}
           />
 
-          <ScrollView
-            style={styles.contentPane}
-            contentContainerStyle={styles.contentScrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <WelcomeCard />
-            <BalanceCard
-              balanceVisible={balanceVisible}
-              onToggleVisibility={() => setBalanceVisible(!balanceVisible)}
-            />
-            <QuickActionsSection />
-            <RecentTransactionsSection
-              onViewAll={() => {
-                setShowAllTransactions(true);
-                setLoadedTransactionCount(10);
-              }}
-            />
-          </ScrollView>
+          {isWeb ? (
+            <View style={flattenStyleForWeb({ ...styles.contentPane, ...styles.contentScrollContent, overflow: 'scroll', flex: 1 })}>
+              <WelcomeCard />
+              <BalanceCard
+                balanceVisible={balanceVisible}
+                onToggleVisibility={() => setBalanceVisible(!balanceVisible)}
+              />
+              <QuickActionsSection />
+              <RecentTransactionsSection
+                onViewAll={() => {
+                  setShowAllTransactions(true);
+                  setLoadedTransactionCount(10);
+                }}
+              />
+            </View>
+          ) : (
+            <ScrollView
+              style={styles.contentPane}
+              contentContainerStyle={styles.contentScrollContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <WelcomeCard />
+              <BalanceCard
+                balanceVisible={balanceVisible}
+                onToggleVisibility={() => setBalanceVisible(!balanceVisible)}
+              />
+              <QuickActionsSection />
+              <RecentTransactionsSection
+                onViewAll={() => {
+                  setShowAllTransactions(true);
+                  setLoadedTransactionCount(10);
+                }}
+              />
+            </ScrollView>
+          )}
         </View>
       )}
 

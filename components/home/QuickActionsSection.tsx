@@ -1,40 +1,41 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { GradientView } from './GradientView';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BANKING_COLORS } from './constants';
 import { getQuickActionShadowStyle } from './shadowStyles';
 import { isSmallDevice } from './constants';
+import { flattenStyleForWeb } from './webSafeStyles';
 
 export function QuickActionsSection() {
   return (
-    <View style={styles.quickActionsSection}>
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
-      <View style={styles.quickActions}>
-        <Pressable style={[styles.quickActionCard, getQuickActionShadowStyle()]}>
-          <LinearGradient
+    <View style={flattenStyleForWeb(styles.quickActionsSection)}>
+      <Text style={flattenStyleForWeb(styles.sectionTitle)}>Quick Actions</Text>
+      <View style={flattenStyleForWeb(styles.quickActions)}>
+        <Pressable style={flattenStyleForWeb({ ...styles.quickActionCard, ...getQuickActionShadowStyle() })}>
+          <GradientView
             colors={[BANKING_COLORS.primary, BANKING_COLORS.primaryLight]}
-            style={styles.quickActionGradient}
+            style={flattenStyleForWeb(styles.quickActionGradient)}
           >
-            <Text style={styles.quickActionIcon}>💳</Text>
-            <Text style={styles.quickActionText}>Accounts</Text>
-          </LinearGradient>
+            <Text style={flattenStyleForWeb(styles.quickActionIcon)}>💳</Text>
+            <Text style={flattenStyleForWeb(styles.quickActionText)}>Accounts</Text>
+          </GradientView>
         </Pressable>
-        <Pressable style={[styles.quickActionCard, getQuickActionShadowStyle()]}>
-          <LinearGradient
+        <Pressable style={flattenStyleForWeb({ ...styles.quickActionCard, ...getQuickActionShadowStyle() })}>
+          <GradientView
             colors={[BANKING_COLORS.secondary, '#34D399']}
-            style={styles.quickActionGradient}
+            style={flattenStyleForWeb(styles.quickActionGradient)}
           >
-            <Text style={styles.quickActionIcon}>📊</Text>
-            <Text style={styles.quickActionText}>Transactions</Text>
-          </LinearGradient>
+            <Text style={flattenStyleForWeb(styles.quickActionIcon)}>📊</Text>
+            <Text style={flattenStyleForWeb(styles.quickActionText)}>Transactions</Text>
+          </GradientView>
         </Pressable>
-        <Pressable style={[styles.quickActionCard, getQuickActionShadowStyle()]}>
-          <LinearGradient
+        <Pressable style={flattenStyleForWeb({ ...styles.quickActionCard, ...getQuickActionShadowStyle() })}>
+          <GradientView
             colors={[BANKING_COLORS.accent, '#FBBF24']}
-            style={styles.quickActionGradient}
+            style={flattenStyleForWeb(styles.quickActionGradient)}
           >
-            <Text style={styles.quickActionIcon}>💰</Text>
-            <Text style={styles.quickActionText}>Balance</Text>
-          </LinearGradient>
+            <Text style={flattenStyleForWeb(styles.quickActionIcon)}>💰</Text>
+            <Text style={flattenStyleForWeb(styles.quickActionText)}>Balance</Text>
+          </GradientView>
         </Pressable>
       </View>
     </View>
