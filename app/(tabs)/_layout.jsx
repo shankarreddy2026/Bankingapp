@@ -35,9 +35,9 @@ export default function TabLayout() {
           headerTintColor: '#FFFFFF',
         }}
       />
-      <Stack.Screen name="account" options={{ title: 'Account' }} />
+      {/* <Stack.Screen name="account" options={{ title: 'Account' }} />
       <Stack.Screen name="profile" options={{ title: 'Profile' }} />
-      <Stack.Screen name="money" options={{ title: 'Money' }} />
+      <Stack.Screen name="money" options={{ title: 'Money' }} /> */}
     </Stack>
   );
 }
