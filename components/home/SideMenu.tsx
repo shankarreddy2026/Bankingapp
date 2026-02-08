@@ -140,12 +140,12 @@ export function SideMenu({
     const webMenuScrollStyle = flattenStyleForWeb({
       ...menuStyles.menuScroll,
       ...menuStyles.menuContentContainer,
-      overflow: 'scroll',
+      overflow: 'scroll' as const,
       flex: 1,
     });
     return (
       <View style={webMenuStyle}>
-        <View style={flattenStyleForWeb(webMenuScrollStyle)}>
+        <View style={webMenuScrollStyle}>
           {menuContent}
         </View>
       </View>
