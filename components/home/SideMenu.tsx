@@ -20,6 +20,7 @@ interface SideMenuProps {
   openSection: string | null;
   onToggleSection: (title: string) => void;
   onClose: () => void;
+  onLogout: () => void;
 }
 
 function MenuHeader({ onClose }: { onClose: () => void }) {
@@ -110,9 +111,15 @@ export function SideMenu({
   openSection,
   onToggleSection,
   onClose,
+  onLogout,
 }: SideMenuProps) {
   const router = useRouter();
   const handleNavigate = (href: string) => router.push(href as any);
+
+  const handleLogout = () => {
+    onClose();
+    onLogout();
+  };
 
   const menuContent = (
     <>
@@ -127,6 +134,15 @@ export function SideMenu({
           onNavigate={handleNavigate}
         />
       ))}
+      <View style={flattenStyleForWeb(menuStyles.logoutContainer)}>
+        <Pressable
+          onPress={handleLogout}
+          style={flattenStyleForWeb(menuStyles.logoutButton)}
+        >
+          <Text style={flattenStyleForWeb(menuStyles.logoutIcon)}>🚪</Text>
+          <Text style={flattenStyleForWeb(menuStyles.logoutText)}>Logout</Text>
+        </Pressable>
+      </View>
     </>
   );
 
@@ -163,6 +179,17 @@ export function SideMenu({
         data={MENU}
         keyExtractor={(item) => item.title}
         ListHeaderComponent={() => <MenuHeader onClose={onClose} />}
+        ListFooterComponent={() => (
+          <View style={flattenStyleForWeb(menuStyles.logoutContainer)}>
+            <Pressable
+              onPress={handleLogout}
+              style={flattenStyleForWeb(menuStyles.logoutButton)}
+            >
+              <Text style={flattenStyleForWeb(menuStyles.logoutIcon)}>🚪</Text>
+              <Text style={flattenStyleForWeb(menuStyles.logoutText)}>Logout</Text>
+            </Pressable>
+          </View>
+        )}
         contentContainerStyle={menuStyles.menuContentContainer}
         showsVerticalScrollIndicator={true}
         renderItem={({ item: section }) => (
@@ -343,5 +370,34 @@ const menuStyles = StyleSheet.create({
     fontSize: isSmallDevice ? 15 : 17,
     fontWeight: '600',
     letterSpacing: 0.2,
+  },
+  logoutContainer: {
+    marginTop: 'auto',
+    paddingTop: 24,
+    paddingBottom: 8,
+    borderTopWidth: 2,
+    borderTopColor: '#E2E8F0',
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+  },
+  logoutIcon: {
+    fontSize: 18,
+    marginRight: 10,
+    color: '#DC2626',
+  },
+  logoutText: {
+    color: '#DC2626',
+    fontSize: isSmallDevice ? 16 : 18,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });

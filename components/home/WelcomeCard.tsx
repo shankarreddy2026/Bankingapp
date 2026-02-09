@@ -1,11 +1,18 @@
-import { GradientView } from './GradientView';
 import { StyleSheet, Text, View } from 'react-native';
-import { BANKING_COLORS } from './constants';
+import { BANKING_COLORS, isSmallDevice } from './constants';
+import { GradientView } from './GradientView';
 import { getCardShadowStyle } from './shadowStyles';
-import { isSmallDevice } from './constants';
 import { flattenStyleForWeb } from './webSafeStyles';
 
-export function WelcomeCard() {
+function getDisplayName(email: string): string {
+  if (!email?.trim()) return '';
+  const part = email.split('@')[0]?.trim() ?? '';
+  return part ? part.charAt(0).toUpperCase() + part.slice(1) : '';
+}
+
+export function WelcomeCard({ email }: { email?: string }) {
+  const displayName = getDisplayName(email ?? '');
+  const greeting = displayName ? `${displayName}'s Account Overview` : 'Account Overview';
   return (
     <GradientView
       colors={[BANKING_COLORS.primary, BANKING_COLORS.primaryDark]}
@@ -14,7 +21,7 @@ export function WelcomeCard() {
       style={flattenStyleForWeb(styles.welcomeCard)}
     >
       <View style={flattenStyleForWeb(styles.welcomeContent)}>
-        <Text style={flattenStyleForWeb(styles.welcomeGreeting)}>Account Overview 💼</Text>
+        <Text style={flattenStyleForWeb(styles.welcomeGreeting)}>{greeting}</Text>
         <Text style={flattenStyleForWeb(styles.welcomeSubtext)}>Manage your finances securely</Text>
       </View>
     </GradientView>

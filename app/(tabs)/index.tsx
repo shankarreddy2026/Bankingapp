@@ -232,11 +232,19 @@ export default function HomeScreen() {
             openSection={openSection}
             onToggleSection={toggleSection}
             onClose={closeMenu}
+            onLogout={() => {
+              setLoggedIn(false);
+              setEmail('');
+              setPassword('');
+              setEmailError('');
+              setPasswordError('');
+              setTouched({ email: false, password: false });
+            }}
           />
 
           {isWeb ? (
             <View style={flattenStyleForWeb({ ...styles.contentPane, ...styles.contentScrollContent, overflow: 'scroll', flex: 1 })}>
-              <WelcomeCard />
+              <WelcomeCard email={email} />
               <BalanceCard
                 balanceVisible={balanceVisible}
                 onToggleVisibility={() => setBalanceVisible(!balanceVisible)}
@@ -255,7 +263,7 @@ export default function HomeScreen() {
               contentContainerStyle={styles.contentScrollContent}
               showsVerticalScrollIndicator={false}
             >
-              <WelcomeCard />
+              <WelcomeCard email={email} />
               <BalanceCard
                 balanceVisible={balanceVisible}
                 onToggleVisibility={() => setBalanceVisible(!balanceVisible)}
