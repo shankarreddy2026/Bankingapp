@@ -1,6 +1,6 @@
 import { GradientView } from '../../components/home/GradientView';
 import { useNavigation } from 'expo-router';
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
   Animated,
   KeyboardAvoidingView,
@@ -41,8 +41,15 @@ export default function HomeScreen() {
   const [showAllTransactions, setShowAllTransactions] = useState(false);
   const [loadedTransactionCount, setLoadedTransactionCount] = useState(10);
   const [balanceVisible, setBalanceVisible] = useState(true);
+  const [showLoginSuccess, setShowLoginSuccess] = useState(false);
 
   const allTransactions = useMemo(() => generateTransactions(), []);
+
+  useEffect(() => {
+    if (!showLoginSuccess) return;
+    const t = setTimeout(() => setShowLoginSuccess(false), 1000);
+    return () => clearTimeout(t);
+  }, [showLoginSuccess]);
   const isWeb = Platform.OS === 'web';
 
   const menuSlideAnim = useState(new Animated.Value(-300))[0];
@@ -105,7 +112,10 @@ export default function HomeScreen() {
     setTouched({ email: true, password: true });
     validateEmail(email);
     validatePassword(password);
-    if (canLogin) setLoggedIn(true);
+    if (canLogin) {
+      setLoggedIn(true);
+      setShowLoginSuccess(true);
+    }
   };
 
   const toggleSection = (title: string) => {
@@ -273,6 +283,14 @@ export default function HomeScreen() {
           }
         }}
       />
+
+      {loggedIn && showLoginSuccess && (
+        <View style={styles.loginSuccessOverlay} pointerEvents="none">
+          <View style={isWeb ? flattenStyleForWeb(styles.loginSuccessPopup) : styles.loginSuccessPopup}>
+            <Text style={styles.loginSuccessText}>✓ Successfully logged in</Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -377,5 +395,28 @@ const styles = StyleSheet.create({
   contentScrollContent: {
     padding: isSmallDevice ? 16 : 20,
     paddingBottom: 40,
+  },
+  loginSuccessOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 48,
+    zIndex: 9999,
+  },
+  loginSuccessPopup: {
+    backgroundColor: '#059669',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    ...getShadowStyle(),
+  },
+  loginSuccessText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

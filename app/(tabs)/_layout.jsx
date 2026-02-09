@@ -33,6 +33,8 @@ export default function TabLayout() {
           },
           headerTitleAlign: 'center',
           headerTintColor: '#FFFFFF',
+          headerShadowVisible: false,
+          
         }}
       />
       {/* <Stack.Screen name="account" options={{ title: 'Account' }} />

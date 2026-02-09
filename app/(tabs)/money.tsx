@@ -1,6 +1,6 @@
+import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const isSmallDevice = SCREEN_WIDTH < 360;
@@ -129,18 +129,20 @@ export default function MoneyScreen() {
           <>
             <View style={styles.overviewHeader}>
               <Text style={styles.overviewLabel}>Current Investment</Text>
-              <Text style={styles.overviewValue}>₹{product.currentInvestment.toLocaleString('en-IN')}</Text>
+              <Text style={styles.overviewValue}>
+                ₹{(product as typeof productData.ntf).currentInvestment.toLocaleString('en-IN')}
+              </Text>
             </View>
             <View style={styles.overviewRow}>
               <View style={styles.overviewItem}>
                 <Text style={styles.overviewItemLabel}>Maturity Amount</Text>
                 <Text style={[styles.overviewItemValue, { color: BANKING_COLORS.success }]}>
-                  ₹{product.maturityAmount.toLocaleString('en-IN')}
+                  ₹{(product as typeof productData.ntf).maturityAmount.toLocaleString('en-IN')}
                 </Text>
               </View>
               <View style={styles.overviewItem}>
                 <Text style={styles.overviewItemLabel}>Maturity Date</Text>
-                <Text style={styles.overviewItemValue}>{product.maturityDate}</Text>
+                <Text style={styles.overviewItemValue}>{(product as typeof productData.ntf).maturityDate}</Text>
               </View>
             </View>
             <View style={styles.interestRateBadge}>
@@ -153,19 +155,21 @@ export default function MoneyScreen() {
           <>
             <View style={styles.overviewHeader}>
               <Text style={styles.overviewLabel}>Current Investment</Text>
-              <Text style={styles.overviewValue}>₹{product.currentInvestment.toLocaleString('en-IN')}</Text>
+              <Text style={styles.overviewValue}>
+                ₹{(product as typeof productData.ilf).currentInvestment.toLocaleString('en-IN')}
+              </Text>
             </View>
             <View style={styles.overviewRow}>
               <View style={styles.overviewItem}>
                 <Text style={styles.overviewItemLabel}>Current Value</Text>
                 <Text style={[styles.overviewItemValue, { color: BANKING_COLORS.success }]}>
-                  ₹{product.currentValue.toLocaleString('en-IN')}
+                  ₹{(product as typeof productData.ilf).currentValue.toLocaleString('en-IN')}
                 </Text>
               </View>
               <View style={styles.overviewItem}>
                 <Text style={styles.overviewItemLabel}>Returns</Text>
                 <Text style={[styles.overviewItemValue, { color: BANKING_COLORS.success }]}>
-                  +{product.returnPercentage}%
+                  +{(product as typeof productData.ilf).returnPercentage}%
                 </Text>
               </View>
             </View>
@@ -179,7 +183,7 @@ export default function MoneyScreen() {
           <>
             <View style={styles.overviewHeader}>
               <Text style={styles.overviewLabel}>Available Credit Limit</Text>
-              <Text style={styles.overviewValue}>₹{product.availableBalance.toLocaleString('en-IN')}</Text>
+              <Text style={styles.overviewValue}>₹{(product as typeof productData.impls).availableBalance.toLocaleString('en-IN')}</Text>
             </View>
             <View style={styles.progressBarContainer}>
               <View style={styles.progressBarBackground}>
@@ -187,14 +191,14 @@ export default function MoneyScreen() {
                   style={[
                     styles.progressBarFill,
                     {
-                      width: `${(product.usedLimit / product.maxAmount) * 100}%`,
+                      width: `${((product as typeof productData.impls).usedLimit / (product as typeof productData.impls).maxAmount) * 100}%`,
                     },
                   ]}
                 />
               </View>
               <View style={styles.progressBarLabels}>
-                <Text style={styles.progressBarLabel}>Used: ₹{product.usedLimit.toLocaleString('en-IN')}</Text>
-                <Text style={styles.progressBarLabel}>Limit: ₹{product.maxAmount.toLocaleString('en-IN')}</Text>
+                <Text style={styles.progressBarLabel}>Used: ₹{(product as typeof productData.impls).usedLimit.toLocaleString('en-IN')}</Text>
+                <Text style={styles.progressBarLabel}>Limit: ₹{(product as typeof productData.impls).maxAmount.toLocaleString('en-IN')}</Text>
               </View>
             </View>
             <View style={styles.interestRateBadge}>
@@ -305,7 +309,9 @@ export default function MoneyScreen() {
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>{productType === 'IMPLS' ? 'Maximum Amount' : 'Minimum Amount'}</Text>
               <Text style={styles.detailValue}>
-                ₹{((productType === 'IMPLS' ? product.maxAmount : product.minAmount) || 0).toLocaleString('en-IN')}
+                ₹{((productType === 'IMPLS'
+                  ? (product as typeof productData.impls).maxAmount
+                  : (product as typeof productData.ntf).minAmount) || 0).toLocaleString('en-IN')}
               </Text>
             </View>
             <View style={styles.detailRow}>
@@ -375,7 +381,7 @@ export default function MoneyScreen() {
                     <Text style={styles.transactionDate}>2024-01-10</Text>
                   </View>
                   <Text style={[styles.transactionAmount, { color: BANKING_COLORS.success }]}>
-                    +₹{product.currentInvestment.toLocaleString('en-IN')}
+                    +₹{('currentInvestment' in product ? product.currentInvestment : 0).toLocaleString('en-IN')}
                   </Text>
                 </View>
                 <View style={[styles.transactionItem, getCardShadowStyle()]}>
@@ -389,7 +395,7 @@ export default function MoneyScreen() {
                     <Text style={styles.transactionDate}>2024-02-01</Text>
                   </View>
                   <Text style={[styles.transactionAmount, { color: BANKING_COLORS.success }]}>
-                    +₹{((product.currentInvestment * 0.075) / 12).toFixed(0)}
+                    +₹{(('currentInvestment' in product ? product.currentInvestment : 0) * 0.075 / 12).toFixed(0)}
                   </Text>
                 </View>
               </>

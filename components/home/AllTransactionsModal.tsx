@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import {
   FlatList,
   Platform,
@@ -10,6 +11,19 @@ import {
 import { BANKING_COLORS, hexToRgba, isSmallDevice } from './constants';
 import type { Transaction } from './constants';
 import { getCardShadowStyle, getShadowStyle } from './shadowStyles';
+
+const PERIODS = ['All', '7 Days', '30 Days', '90 Days'] as const;
+const TYPE_FILTERS = ['All', 'Credit', 'Debit'] as const;
+
+function getFilterDate(period: string): string | null {
+  if (period === 'All') return null;
+  const d = new Date();
+  if (period === '7 Days') d.setDate(d.getDate() - 7);
+  else if (period === '30 Days') d.setDate(d.getDate() - 30);
+  else if (period === '90 Days') d.setDate(d.getDate() - 90);
+  else return null;
+  return d.toISOString().slice(0, 10);
+}
 
 interface AllTransactionsModalProps {
   visible: boolean;
@@ -26,8 +40,22 @@ export function AllTransactionsModal({
   loadedCount,
   onLoadMore,
 }: AllTransactionsModalProps) {
-  const displayedTransactions = transactions.slice(0, loadedCount);
-  const allLoaded = loadedCount >= 100;
+  const [selectedPeriod, setSelectedPeriod] = useState<(typeof PERIODS)[number]>('30 Days');
+  const [selectedType, setSelectedType] = useState<(typeof TYPE_FILTERS)[number]>('All');
+
+  const filteredTransactions = useMemo(() => {
+    let result = transactions;
+    const filterDate = getFilterDate(selectedPeriod);
+    if (filterDate) {
+      result = result.filter((t) => t.dateISO >= filterDate);
+    }
+    if (selectedType === 'Credit') result = result.filter((t) => t.type === 'credit');
+    else if (selectedType === 'Debit') result = result.filter((t) => t.type === 'debit');
+    return result;
+  }, [transactions, selectedPeriod, selectedType]);
+
+  const displayedTransactions = filteredTransactions.slice(0, loadedCount);
+  const allLoaded = loadedCount >= filteredTransactions.length;
 
   return (
     <Modal

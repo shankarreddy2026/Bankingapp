@@ -97,6 +97,7 @@ export interface Transaction {
   id: string;
   title: string;
   date: string;
+  dateISO: string;
   amount: number;
   type: 'credit' | 'debit';
   icon: string;
@@ -141,6 +142,7 @@ const TIMES = [
 
 export function generateTransactions(): Transaction[] {
   const transactions: Transaction[] = [];
+  const today = new Date();
   for (let i = 0; i < 100; i++) {
     const typeIndex = i % TRANSACTION_TYPES.length;
     const amountIndex = Math.floor(i / 10);
@@ -151,10 +153,14 @@ export function generateTransactions(): Transaction[] {
     const amount = amountOptions[i % amountOptions.length];
     const dayIndex = Math.floor(i / 10);
     const timeIndex = i % TIMES.length;
+    const txDate = new Date(today);
+    txDate.setDate(txDate.getDate() - dayIndex);
+    const dateISO = txDate.toISOString().slice(0, 10);
     transactions.push({
       id: `trans-${i + 1}`,
       title: transactionType.title,
       date: `${DAYS_AGO[dayIndex % DAYS_AGO.length]}, ${TIMES[timeIndex]}`,
+      dateISO,
       amount,
       type: transactionType.type,
       icon: transactionType.icon,
